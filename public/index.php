@@ -12,18 +12,18 @@ try {
     require_once __DIR__ . '/../include/bootstrap.php';
     $db = new Database(HOST, DBNAME, USERNAME, PASSWORD);
 } catch (Throwable $t) {
-    header('HTTP/1.0 404 Not Found');
+    http_response_code(404);
     exit();
 }
 
 if (empty($_SERVER['PATH_INFO'])) {
-    header('HTTP/1.0 404 Not Found');
+    http_response_code(404);
     exit();
 }
 
 // Extract URI segments and determine request method
 $uri = explode('/', ltrim($_SERVER['PATH_INFO'], '/'));
-$method_str = strtoupper($_SERVER['REQUEST_METHOD']);
+$method_str = $_SERVER['REQUEST_METHOD'];
 
 // Map the request method to a correct enum case
 try {
@@ -35,7 +35,7 @@ try {
     };
 } catch (UnhandledMatchError $err) {
     // If the request method not valid
-    header('HTTP/1.0 404 Not Found');
+    http_response_code(404);
     exit();
 }
 
@@ -43,7 +43,7 @@ if (array_key_exists($uri[0], ROUTES)) {
     $controller_name = "Controller\\" . ROUTES[$uri[0]];
 } else {
     // Controller not found
-    header('HTTP/1.0 404 Not Found');
+    http_response_code(404);
     exit();
 }
 // Instantiate the right controller, pass endpoint segments to it
