@@ -60,11 +60,12 @@ abstract class Controller
     abstract protected function handleRequest(array $endpoint, HttpMethod $request): void;
 
     /**
-     * Send HTTP response to user
+     * Send HTTP response to client, exit the script
      * 
      * @param int $code HTTP response status code
      * @param bool $status 'true' on success, 'false' otherwise
-     * @param string[] $data Associative array of response data
+     * @param string[] $data Associative array of response data, empty by default
+     * @return never
      */
     protected final function sendResponse(int $code, bool $status, array $data = []): never
     {

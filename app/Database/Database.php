@@ -50,14 +50,14 @@ class Database
      * @param string $query Query to be executed
      * @param bool $fetch_result Whether fetch results of the 'query'
      * @throws DatabaseException if performing the query fails
-     * @return array|null Resulting array or array of arrays provided that 'fetch_result' is 'true', 'null' otherwise 
+     * @return array|null Resulting array of row arrays provided that 'fetch_result' is 'true', 'null' otherwise 
      */
     public function query(string $query, bool $fetch_result = false): array|null
     {
         try {
             $stmt = $this->pdo->query($query);
             if ($fetch_result) {
-                return $stmt->fetchAll(PDO::FETCH_CLASS);
+                return $stmt->fetchAll(PDO::FETCH_ASSOC);
             }
             return null;
         } catch (Exception $e) {

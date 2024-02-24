@@ -20,12 +20,13 @@ class UrlModel extends Model
      * Insert a shortened URL data row
      * 
      * @param array $data Associative array of URL data
-     * @throws ModelException if provided data is incorrect for this model or inserting data fails 
+     * @throws ModelException if provided data is incorrect
+     * @throws DatabaseException if database operation fails
      * @return void
      */
     public function addUrl(array $data): void
     {
-        if (!$this->verifyFields(array_keys($data))) {
+        if (!$this->verifyFields(array_keys($data)) || strlen($data['hash']) !== 7) {
             throw new ModelException('Incorrect URL data');
         }
         try {
@@ -37,7 +38,7 @@ class UrlModel extends Model
             SQL
             );
         } catch (DatabaseException $e) {
-            throw new ModelException($e->getMessage());
+            throw new DatabaseException($e->getMessage());
         }
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Controller;
 
+use Database\DatabaseException;
 use Enum\HttpMethod;
 use Model\ModelException;
 use Model\UrlModel;
@@ -100,6 +101,8 @@ class UrlController extends Controller
                 'hash' => $url_hash
             ]);
         } catch (ModelException $e) {
+            $this->sendResponse(404, false);
+        } catch (DatabaseException $e) {
             $this->sendResponse(500, false);
         }
 
