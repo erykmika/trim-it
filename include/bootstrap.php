@@ -15,4 +15,16 @@ require_once(ROOT_DIR . '/include/routes.php');
 require_once(ROOT_DIR . '/vendor/autoload.php');
 
 // Custom Error handler
-set_exception_handler(fn(Error $err) => print('Error has occurred ' . $err->getMessage()));
+set_exception_handler(fn (Error $err) => print('Error has occurred ' . $err->getMessage()));
+
+/**
+ * Not found response function for an API entry point
+ * 
+ * @return never 
+ */
+function notFoundResponse(): never
+{
+    http_response_code(404);
+    echo json_encode(['status' => 'failure']);
+    exit();
+}

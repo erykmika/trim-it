@@ -12,13 +12,11 @@ try {
     require_once __DIR__ . '/../include/bootstrap.php';
     $db = new Database(HOST, DBNAME, USERNAME, PASSWORD);
 } catch (Throwable $t) {
-    http_response_code(404);
-    exit();
+    notFoundResponse();
 }
 
 if (empty($_SERVER['PATH_INFO'])) {
-    http_response_code(404);
-    exit();
+    notFoundResponse();
 }
 
 // Extract URI segments and determine request method
@@ -35,16 +33,14 @@ try {
     };
 } catch (UnhandledMatchError $err) {
     // If the request method not valid
-    http_response_code(404);
-    exit();
+    notFoundResponse();
 }
 
 if (array_key_exists($uri[0], ROUTES)) {
     $controller_name = "Controller\\" . ROUTES[$uri[0]];
 } else {
     // Controller not found
-    http_response_code(404);
-    exit();
+    notFoundResponse();
 }
 // Instantiate the right controller, pass endpoint segments to it
 $controller = new $controller_name($db, array_slice($uri, 1), $method);

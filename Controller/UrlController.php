@@ -25,8 +25,11 @@ class UrlController extends Controller
      */
     protected function handleRequest(array $endpoint, HttpMethod $method): never
     {
+        // TODO
         if ($endpoint === ['generate'] && $method === HttpMethod::POST) {
             $this->handleShortening();
+        } else {
+            $this->sendResponse(404, false);
         }
     }
 
@@ -91,7 +94,7 @@ class UrlController extends Controller
         $url_hash = $this->shortenUrl($url);
 
         try {
-            $url_model = $this->getModel("\\" . UrlModel::class);
+            $url_model = $this->getModel(UrlModel::class);
             $url_model->addUrl([
                 'url' => $url,
                 'hash' => $url_hash
@@ -101,7 +104,6 @@ class UrlController extends Controller
         }
 
         $this->sendResponse(200, true, [
-            'status' => 'success',
             'hash' => $url_hash
         ]);
     }

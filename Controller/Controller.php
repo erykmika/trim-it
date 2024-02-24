@@ -45,8 +45,7 @@ abstract class Controller
             }
             $model = new $class_name($this->db);
         } catch (Throwable $t) {
-            http_response_code(404);
-            exit;
+            $this->sendResponse(404, false);
         }
         return $model;
     }
