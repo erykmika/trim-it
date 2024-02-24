@@ -20,7 +20,7 @@ abstract class Model
     /**
      * Create a Model object, set the reference to a database
      */
-    public function __construct(Database $db)
+    public final function __construct(Database $db)
     {
         $this->db = $db;
     }

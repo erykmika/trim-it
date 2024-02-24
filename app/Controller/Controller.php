@@ -55,9 +55,9 @@ abstract class Controller
      * 
      * @param array $endpoint Array of URI segment of the endpoint
      * @param HttpMethod $method HTTP method of the request
-     * @return void
+     * @return never
      */
-    abstract protected function handleRequest(array $endpoint, HttpMethod $request): void;
+    abstract protected function handleRequest(array $endpoint, HttpMethod $method): never;
 
     /**
      * Send HTTP response to client, exit the script

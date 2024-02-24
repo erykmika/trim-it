@@ -17,7 +17,7 @@ class UrlModel extends Model
     protected const ALLOWED_FIELDS = ['url', 'hash'];
 
     /**
-     * Insert a shortened URL data row
+     * Insert a trimmed URL data row
      * 
      * @param array $data Associative array of URL data
      * @throws ModelException if provided data is incorrect
@@ -40,5 +40,28 @@ class UrlModel extends Model
         } catch (DatabaseException $e) {
             throw new DatabaseException($e->getMessage());
         }
+    }
+
+    /**
+     * Get URL by given hash
+     * 
+     * @param string $hash Hash of the URL
+     * @return string URL that is looked for
+     */
+    public function getUrlByHash(string $hash): string
+    {
+        try {
+            $url = $this->db->query(<<<SQL
+            SELECT url
+            FROM Url
+            WHERE hash = '$hash'
+            SQL, true);
+        } catch (DatabaseException $e) {
+            throw new DatabaseException($e->getMessage());
+        }
+        if (empty($url)) {
+            throw new ModelException('URL not found');
+        }
+        return $url[0]['url'];
     }
 }

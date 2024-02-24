@@ -10,104 +10,42 @@ use Model\ModelException;
 use Model\UrlModel;
 
 /**
- * Controller for handling URL shortening requests
+ * Controller for handling URL retrieve requests
  */
 class UrlController extends Controller
 {
-    /** @var string CHARS Characters to be used in generating shortened URL  */
-    private const CHARS = "ab0cd1ef2gh3ij4kl5mn6op7qr8st9uv0wxyz";
-
     /**
-     * Handle the request related to shortening a URL
+     * Validate and handle the URL retrieve request
      * 
-     * @param array $endpoint Array of the endpoint URI segments handled by this controller
+     * @param string[] $endpoint Array of URI segments handled by this controller
      * @param HttpMethod $method HTTP method of the request
      * @return never
      */
     protected function handleRequest(array $endpoint, HttpMethod $method): never
     {
-        // TODO
-        if ($endpoint === ['generate'] && $method === HttpMethod::POST) {
-            $this->handleShortening();
+        if (count($endpoint) === 1 && strlen($endpoint[0]) === 7 && $method === HttpMethod::GET) {
+            $this->getUrl($endpoint[0]);
         } else {
             $this->sendResponse(404, false);
         }
     }
 
     /**
-     * Shorten URL and generate its 7-characters long hash
-     * Use the haval224,4 algorithm that produces 224-bit long hashes
-     * Use 4-byte chunks of it to generate the hash
+     * Get URL specified by given hash and send it to client
      * 
-     * @param string $url
-     * @return string Hash of the shortened URL  
-     */
-    private function shortenUrl(string $url): string
-    {
-        $url = $_POST['url'];
-        $haval_hash = hash('haval224,4', $url);
-        $haval_chunks = str_split($haval_hash, 8);
-
-        // Get decimal representations of the next chunks
-        $haval_chunks = array_map(
-            fn (string $chunk) => hexdec($chunk),
-            $haval_chunks
-        );
-
-        // Use time as seed
-        $time_seed = time();
-        // Number of available characters
-        $char_num = strlen(self::CHARS);
-
-        // Resulting URL hash
-        $url_hash = "";
-        // XOR each chunk and time seed, use the remainder for indexing CHARS
-        foreach ($haval_chunks as $chunk) {
-            $char_index = ($chunk ^ $time_seed) % $char_num;
-            $url_hash .= self::CHARS[$char_index];
-        }
-        return $url_hash;
-    }
-
-    /**
-     * Check if the URL 'url' provided within POST data is set and correct
-     * 
-     * @return bool is data set and correct
-     */
-    private function validateUrlPostData(): bool
-    {
-        return (isset($_POST['url']) && !empty($_POST['url']) &&
-            filter_var($_POST['url'], FILTER_VALIDATE_URL) !== FALSE);
-    }
-
-    /**
-     * Handle URL shortening request
-     * 
+     * @param string $hash Hash of a previously trimmed URL
      * @return never
      */
-    private function handleShortening(): never
+    private function getUrl(string $hash): never
     {
-        if (!$this->validateUrlPostData()) {
-            $this->sendResponse(404, false);
-        }
-
-        $url = $_POST['url'];
-        $url_hash = $this->shortenUrl($url);
-
         try {
             $url_model = $this->getModel(UrlModel::class);
-            $url_model->addUrl([
-                'url' => $url,
-                'hash' => $url_hash
-            ]);
+            $url = $url_model->getUrlByHash($hash);
+        } catch (DatabaseException $e) {
+            $this->sendResponse(503, false);
         } catch (ModelException $e) {
             $this->sendResponse(404, false);
-        } catch (DatabaseException $e) {
-            $this->sendResponse(500, false);
         }
-
-        $this->sendResponse(200, true, [
-            'hash' => $url_hash
-        ]);
+        $this->sendResponse(200, true, ['url' => $url]);
     }
 }

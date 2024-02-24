@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 // Map URI segments to controllers
-define("ROUTES", [
-    "url" => "UrlController"
+define('ROUTES', [
+    'url' => 'UrlController',
+    'hash' => 'TrimController'
 ]);
