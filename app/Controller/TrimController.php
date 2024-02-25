@@ -44,7 +44,6 @@ class TrimController extends Controller
      */
     private function trimUrl(string $url): string
     {
-        $url = $_POST['url'];
         $haval_hash = hash('haval224,4', $url);
         $haval_chunks = str_split($haval_hash, 8);
 
@@ -70,14 +69,23 @@ class TrimController extends Controller
     }
 
     /**
-     * Check if the URL 'url' provided within POST data is set and correct
+     * Check if the URL 'url' provided within JSON POST data is set and correct
+     * Return it if so, return false otherwise
      * 
-     * @return bool is data set and correct
+     * @return mixed URL POST data given it's correct, false otherwise
      */
-    private function validateUrlPostData(): bool
+    private function validateUrlPostData(): mixed
     {
-        return (isset($_POST['url']) && !empty($_POST['url']) &&
-            filter_var($_POST['url'], FILTER_VALIDATE_URL) !== FALSE);
+        $json = file_get_contents('php://input');
+        $data = json_decode($json, true);
+        if (
+            !isset($data['url']) || empty($data['url']) ||
+            filter_var($data['url'], FILTER_VALIDATE_URL) === FALSE
+        ) {
+            return false;
+        } else {
+            return $data;
+        }
     }
 
     /**
@@ -87,11 +95,12 @@ class TrimController extends Controller
      */
     private function handleTrimming(): never
     {
-        if (!$this->validateUrlPostData()) {
+        $request_data = $this->validateUrlPostData();
+        if ($request_data === false) {
             $this->sendResponse(404, false);
         }
 
-        $url = $_POST['url'];
+        $url = $request_data['url'];
         $url_hash = $this->trimUrl($url);
 
         try {
