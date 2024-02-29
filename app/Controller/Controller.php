@@ -25,7 +25,7 @@ abstract class Controller
      * @param array $endpoint Array of endpoint URI segments handled by the Controller
      * @param HttpMethod $method HTTP method used
      */
-    public final function __construct(Database $db, array $endpoint, HttpMethod $method)
+    public function __construct(Database $db, array $endpoint, HttpMethod $method)
     {
         $this->db = $db;
         $this->handleRequest($endpoint, $method);

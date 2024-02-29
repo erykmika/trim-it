@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Controller;
 
+use Database\Database;
 use Database\DatabaseException;
 use Enum\HttpMethod;
 use Model\ModelException;
@@ -15,7 +16,20 @@ use Model\UrlModel;
 class TrimController extends Controller
 {
     /** @var string CHARS Characters to be used in generating trimmed URL  */
-    private const CHARS = "ab0cd1ef2gh3ij4kl5mn6op7qr8st9uv0wxyz";
+    protected const CHARS = "ab0cd1ef2gh3ij4kl5mn6op7qr8st9uv0wxyz";
+
+    /** @var string input_stream Stream used for accessing JSON data, helpful in test doubles */
+    protected readonly string $input_stream;
+
+    /**
+     * Initialize the TrimController object
+     * Specify the input stream for request data
+     */
+    public function __construct(Database $db, array $endpoint, HttpMethod $method)
+    {
+        $this->input_stream = 'php://input';
+        parent::__construct($db, $endpoint, $method);
+    }
 
     /**
      * Handle the request related to trimming a URL
@@ -26,7 +40,6 @@ class TrimController extends Controller
      */
     protected function handleRequest(array $endpoint, HttpMethod $method): never
     {
-        // TODO
         if ($method === HttpMethod::POST) {
             $this->handleTrimming();
         } else {
@@ -42,7 +55,7 @@ class TrimController extends Controller
      * @param string $url
      * @return string Hash of the trimmed URL  
      */
-    private function trimUrl(string $url): string
+    protected function trimUrl(string $url): string
     {
         $haval_hash = hash('haval224,4', $url);
         $haval_chunks = str_split($haval_hash, 8);
@@ -74,10 +87,9 @@ class TrimController extends Controller
      * 
      * @return mixed URL POST data given it's correct, false otherwise
      */
-    private function validateUrlPostData(): mixed
+    protected function validateUrlPostData(): mixed
     {
-        $json = file_get_contents('php://input');
-        $data = json_decode($json, true);
+        $data = $this->getPostJsonData();
         if (
             !isset($data['url']) || empty($data['url']) ||
             filter_var($data['url'], FILTER_VALIDATE_URL) === FALSE
@@ -93,7 +105,7 @@ class TrimController extends Controller
      * 
      * @return never
      */
-    private function handleTrimming(): never
+    protected function handleTrimming(): never
     {
         $request_data = $this->validateUrlPostData();
         if ($request_data === false) {
@@ -118,5 +130,17 @@ class TrimController extends Controller
         $this->sendResponse(200, true, [
             'hash' => $url_hash
         ]);
+    }
+
+    /**
+     * Get POST data from JSON-encoded input stream
+     * 
+     * @return string[] Resulting array
+     */
+    protected function getPostJsonData(): array
+    {
+        $json = file_get_contents($this->input_stream);
+        $data = json_decode($json, true);
+        return $data;
     }
 }

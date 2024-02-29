@@ -10,8 +10,14 @@ use function PHPUnit\Framework\assertEquals;
 
 final class UrlModelTest extends TestCase
 {
+    /**
+     * @var Database $db Database object used for testing
+     */
     private Database $db;
 
+    /**
+     * @var UrlModel $url_model UrlModel object used for testing
+     */
     private UrlModel $url_model;
 
     protected function setUp(): void

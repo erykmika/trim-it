@@ -13,8 +13,14 @@
     },
     "autoload": {
         "psr-4": {
-            "Database\\": "./app/Database",
-            "Controller\\": "./app/Controller",
+            "Database\\": [
+                "./app/Database",
+                "./tests/doubles"
+            ],
+            "Controller\\": [
+                "./app/Controller",
+                "./tests/doubles"
+            ],
             "Model\\": "./app/Model",
             "Enum\\": "./app/Enum"
         }
