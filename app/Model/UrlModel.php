@@ -46,9 +46,9 @@ class UrlModel extends Model
      * Get URL by given hash
      * 
      * @param string $hash Hash of the URL
-     * @return string URL that is looked for
+     * @return string|bool URL that is looked for or false if the hash is not present
      */
-    public function getUrlByHash(string $hash): string
+    public function getUrlByHash(string $hash): string|bool
     {
         try {
             $url = $this->db->query(<<<SQL
@@ -60,7 +60,7 @@ class UrlModel extends Model
             throw new DatabaseException($e->getMessage());
         }
         if (empty($url)) {
-            throw new ModelException('URL not found');
+            return false;
         }
         return $url[0]['url'];
     }

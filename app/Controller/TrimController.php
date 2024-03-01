@@ -7,7 +7,6 @@ namespace Controller;
 use Database\Database;
 use Database\DatabaseException;
 use Enum\HttpMethod;
-use Model\ModelException;
 use Model\UrlModel;
 
 /**
@@ -117,12 +116,16 @@ class TrimController extends Controller
 
         try {
             $url_model = $this->getModel(UrlModel::class);
+            // Check if the hash already exists
+            $lookedup_url = $url_model->getUrlByHash($url_hash);
+            // Retry to create one if so
+            if ($lookedup_url !== false) {
+                $url_hash = $this->trimUrl($url);
+            }
             $url_model->addUrl([
                 'url' => $url,
                 'hash' => $url_hash
             ]);
-        } catch (ModelException $e) {
-            $this->sendResponse(404, false);
         } catch (DatabaseException $e) {
             $this->sendResponse(503, false);
         }
