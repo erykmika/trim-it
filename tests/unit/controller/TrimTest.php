@@ -17,9 +17,9 @@ final class TrimTest extends TestCase
     private Database $db;
 
     /**
-     * @var TrimDouble $controller Controller object used for testing
+     * @var ?TrimDouble $controller Controller object used for testing
      */
-    private TrimDouble $controller;
+    private ?TrimDouble $controller;
 
     protected function setUp(): void
     {
@@ -29,7 +29,11 @@ final class TrimTest extends TestCase
             USERNAME,
             PASSWORD
         );
-        $this->controller = new TrimDouble($this->db, '');
+    }
+
+    protected function tearDown(): void
+    {
+        $this->controller = null;
     }
 
     /**
@@ -37,6 +41,7 @@ final class TrimTest extends TestCase
      */
     public function testGeneratedHashHasDesiredLength(): void
     {
+        $this->controller = new TrimDouble($this->db, '');
         $url = 'https://github.com/erykmika';
         $hash = $this->controller->trimUrl($url);
         assertSame(7, strlen($hash));
@@ -47,6 +52,7 @@ final class TrimTest extends TestCase
      */
     public function testCharactersAreWithinDomain(): void
     {
+        $this->controller = new TrimDouble($this->db, '');
         $url = 'https://github.com/erykmika/trim-it';
         $hash = $this->controller->trimUrl($url);
         $character_domain = $this->controller->getChars();
@@ -60,5 +66,23 @@ final class TrimTest extends TestCase
             return true;
         };
         assertTrue($test_fn($split, $character_domain));
+    }
+
+    /**
+     * @covers \Controller\TrimController::validateUrlPostData
+     */
+    public function testUrlPostDataCanBeValidated(): void
+    {
+        $this->controller = new TrimDouble($this->db, 'https://github.com/erykmika/trim-it');
+        assertTrue(($this->controller->validateUrlPostData() !== false));
+    }
+
+    /**
+     * @covers \Controller\TrimController::validateUrlPostData
+     */
+    public function testIncorrectUrlIsRejected(): void
+    {
+        $this->controller = new TrimDouble($this->db, '//github.com/erykmika/trim-it');
+        assertTrue(($this->controller->validateUrlPostData() === false));
     }
 }

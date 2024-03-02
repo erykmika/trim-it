@@ -19,7 +19,7 @@ class UrlModel extends Model
     /**
      * Insert a trimmed URL data row
      * 
-     * @param array $data Associative array of URL data
+     * @param string[] $data Associative array of URL data
      * @throws ModelException if provided data is incorrect
      * @throws DatabaseException if database operation fails
      * @return void

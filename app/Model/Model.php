@@ -28,7 +28,7 @@ abstract class Model
     /**
      * Verify if given fields are allowed in this model
      * 
-     * @param array $fields Array of fields to be checked
+     * @param string[] $fields Array of fields to be checked
      * @return bool Are the fields allowed
      */
     protected function verifyFields(array $fields): bool

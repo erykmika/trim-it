@@ -7,6 +7,7 @@ namespace Controller;
 use Database\Database;
 use Database\DatabaseException;
 use Enum\HttpMethod;
+use JsonException;
 use Model\UrlModel;
 
 /**
@@ -33,7 +34,7 @@ class TrimController extends Controller
     /**
      * Handle the request related to trimming a URL
      * 
-     * @param array $endpoint Array of the endpoint URI segments handled by this controller
+     * @param string[] $endpoint Array of the endpoint URI segments handled by this controller
      * @param HttpMethod $method HTTP method of the request
      * @return never
      */
@@ -84,11 +85,15 @@ class TrimController extends Controller
      * Check if the URL 'url' provided within JSON POST data is set and correct
      * Return it if so, return false otherwise
      * 
-     * @return mixed URL POST data given it's correct, false otherwise
+     * @return array|bool URL POST data given it's correct, false otherwise
      */
-    protected function validateUrlPostData(): mixed
+    protected function validateUrlPostData(): array|bool
     {
-        $data = $this->getPostJsonData();
+        try {
+            $data = $this->getPostJsonData();
+        } catch (JsonException $e) {
+            return false;
+        }
         if (
             !isset($data['url']) || empty($data['url']) ||
             filter_var($data['url'], FILTER_VALIDATE_URL) === FALSE
@@ -138,12 +143,13 @@ class TrimController extends Controller
     /**
      * Get POST data from JSON-encoded input stream
      * 
+     * @throws JsonException if parsing JSON fails
      * @return string[] Resulting array
      */
     protected function getPostJsonData(): array
     {
         $json = file_get_contents($this->input_stream);
-        $data = json_decode($json, true);
+        $data = json_decode($json, true, 1, JSON_THROW_ON_ERROR);
         return $data;
     }
 }

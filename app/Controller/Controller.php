@@ -22,7 +22,7 @@ abstract class Controller
      * Call a request handler method
      * 
      * @param Database $db Database object
-     * @param array $endpoint Array of endpoint URI segments handled by the Controller
+     * @param string[] $endpoint Array of endpoint URI segments handled by the Controller
      * @param HttpMethod $method HTTP method used
      */
     public function __construct(Database $db, array $endpoint, HttpMethod $method)
@@ -53,7 +53,7 @@ abstract class Controller
     /**
      * Handle a request sent to a controller
      * 
-     * @param array $endpoint Array of URI segment of the endpoint
+     * @param string[] $endpoint Array of URI segment of the endpoint
      * @param HttpMethod $method HTTP method of the request
      * @return never
      */

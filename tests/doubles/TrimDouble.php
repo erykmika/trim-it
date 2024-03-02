@@ -33,6 +33,24 @@ class TrimDouble extends TrimController
     }
 
     /**
+     * Relax visibility of the method in the parent class for testing
+     * 
+     */
+    public function validateUrlPostData(): array|bool
+    {
+        return parent::validateUrlPostData();
+    }
+
+    /**
+     * Modify the parent class method so that we can pass hardcoded JSON-decoded data
+     */
+    protected function getPostJsonData(): array
+    {
+        return ['url' => $this->input_stream];
+    }
+
+
+    /**
      * Get characters available for generating hashes
      * 
      * @return string CHARS array of the parent class
