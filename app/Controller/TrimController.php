@@ -85,7 +85,7 @@ class TrimController extends Controller
      * Check if the URL 'url' provided within JSON POST data is set and correct
      * Return it if so, return false otherwise
      * 
-     * @return array|bool URL POST data given it's correct, false otherwise
+     * @return string[]|bool URL POST data given it's correct, false otherwise
      */
     protected function validateUrlPostData(): array|bool
     {
@@ -149,7 +149,7 @@ class TrimController extends Controller
     protected function getPostJsonData(): array
     {
         $json = file_get_contents($this->input_stream);
-        $data = json_decode($json, true, 1, JSON_THROW_ON_ERROR);
+        $data = json_decode($json, true, 2, JSON_THROW_ON_ERROR);
         return $data;
     }
 }
