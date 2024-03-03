@@ -16,9 +16,9 @@ final class UrlModelTest extends TestCase
     private Database $db;
 
     /**
-     * @var UrlModel $url_model UrlModel object used for testing
+     * @var ?UrlModel $url_model UrlModel object used for testing
      */
-    private UrlModel $url_model;
+    private ?UrlModel $url_model;
 
     protected function setUp(): void
     {
@@ -29,7 +29,12 @@ final class UrlModelTest extends TestCase
             PASSWORD
         );
         $this->url_model = new UrlModel($this->db);
+    }
+
+    protected function tearDown(): void
+    {
         $this->db->query('DELETE FROM Url;');
+        $this->url_model = null;
     }
 
     /**
@@ -45,5 +50,20 @@ final class UrlModelTest extends TestCase
         ]);
         $fetched_url = $this->db->query("SELECT url FROM Url WHERE hash = '{$hash}'", true);
         assertEquals($url, $fetched_url[0]['url']);
+    }
+
+    /**
+     * @covers \Model\UrlModel::getUrlByHash
+     */
+    public function testUrlCanBeRetrieved(): void
+    {
+        $url = 'https://docs.phpunit.de/';
+        $hash = 'yas2bg0';
+        $this->url_model->addUrl([
+            'url' => $url,
+            'hash' => $hash
+        ]);
+        $fetched_url = $this->url_model->getUrlByHash($hash);
+        assertEquals($url, $fetched_url);
     }
 }
