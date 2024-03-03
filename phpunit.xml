@@ -10,8 +10,12 @@
          failOnRisky="true"
          failOnWarning="true">
     <testsuites>
-        <testsuite name="default">
-            <directory>tests</directory>
+    <!--Seperate unit tests based on component tested-->
+        <testsuite name="controller">
+            <directory>tests/unit/controller</directory>
+        </testsuite>
+        <testsuite name="model">
+            <directory>tests/unit/model</directory>
         </testsuite>
     </testsuites>
 
