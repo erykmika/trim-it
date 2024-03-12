@@ -46,6 +46,9 @@ class UrlController extends Controller
         } catch (ModelException $e) {
             $this->sendResponse(404, false);
         }
+        if ($url === false) {
+            $this->sendResponse(404, false);
+        }
         $this->sendResponse(200, true, ['url' => $url]);
     }
 }
