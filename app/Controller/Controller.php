@@ -60,7 +60,7 @@ abstract class Controller
     abstract protected function handleRequest(array $endpoint, HttpMethod $method): never;
 
     /**
-     * Send HTTP response to client, exit the script
+     * Send HTTP JSON-encoded response to client, exit the script
      * 
      * @param int $code HTTP response status code
      * @param bool $status 'true' on success, 'false' otherwise
@@ -70,6 +70,7 @@ abstract class Controller
     protected final function sendResponse(int $code, bool $status, array $data = []): never
     {
         http_response_code($code);
+        header('Content-Type: application/json; charset=utf-8');
         $status_msg = $status ? 'success' : 'failure';
         echo json_encode(array_merge(['status' => $status_msg], $data));
         exit();
