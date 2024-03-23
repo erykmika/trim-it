@@ -34,7 +34,6 @@ class TrimDouble extends TrimController
 
     /**
      * Relax visibility of the method in the parent class for testing
-     * 
      */
     public function validateUrlPostData(): array|bool
     {
