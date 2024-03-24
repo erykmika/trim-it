@@ -74,6 +74,18 @@ The application handles and serves JSON-encoded requests/responses.
 }
 ```
 
+## Sample scripts for accessing the API
+
+Python scripts that perform GET/POST requests to the application are located in the **sample-requests** directory.
+To run it, make sure you have the **requests** Python package installed (globally). Apart from that, set the host address in
+the **sample-requests/hostaddr.py** file to match your configuration.
+
+```sh
+python sample-requests/
+```
+
+This will start the **\_\_main\_\_.py** script.
+
 ## Unit testing
 
 To launch tests, run the vendor-provided PHPUnit executable.
